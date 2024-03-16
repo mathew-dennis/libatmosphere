@@ -73,6 +73,30 @@ QVariantList AtmosphereModel::atmosphereList()
 	return p_atmosphereList;
 }
 
+QUrl AtmosphereModel::themeSound(QString name)
+{
+	QString theme = qEnvironmentVariable("CUTIE_SOUND_THEME", "cutie");
+	QStringList dataDirList = QStandardPaths::standardLocations(
+		QStandardPaths::GenericDataLocation);
+	for (QString dir : dataDirList) {
+		QDir dataDir(QDir(dir).filePath("sounds"));
+		if (!dataDir.exists(theme))
+			continue;
+		QStringList filters;
+		filters << (name + ".*");
+		dataDir = QDir(dataDir.filePath(theme));
+		for (QString subdir : dataDir.entryList(QDir::Dirs)) {
+			QDir subDataDir(dataDir.filePath(subdir));
+			QStringList candidates =
+				subDataDir.entryList(filters, QDir::Files);
+			if (candidates.count() > 0)
+				return QUrl::fromLocalFile(subDataDir.filePath(
+					candidates.first()));
+		}
+	}
+	return QUrl();
+}
+
 void AtmosphereModel::onAtmosphereDataChanged(QVariantMap data)
 {
 	QString old_path = p_path;

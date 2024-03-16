@@ -59,6 +59,8 @@ class AtmosphereModel : public QObject {
 
 	Q_INVOKABLE QVariantList atmosphereList();
 
+	Q_INVOKABLE QUrl themeSound(QString name);
+
 	static QObject *provider(QQmlEngine *engine, QJSEngine *scriptEngine);
 
     public Q_SLOTS:
