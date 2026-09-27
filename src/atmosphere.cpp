@@ -1,5 +1,7 @@
 #include "atmosphere.h"
+#include "paletteextractor.h"
 #include <QDir>
+#include <QImage>
 #include <QStandardPaths>
 #include <QtQuick>
 #include <cutiestore.h>
@@ -71,6 +73,75 @@ QString AtmosphereModel::textColor()
 QVariantList AtmosphereModel::atmosphereList()
 {
 	return p_atmosphereList;
+}
+
+QVariantMap AtmosphereModel::extractPalette(QUrl wallpaperUrl)
+{
+	return PaletteExtractor::extract(wallpaperUrl);
+}
+
+bool AtmosphereModel::saveAtmosphere(QString name, QUrl wallpaperUrl,
+				      QVariantMap colors)
+{
+	if (name.isEmpty() || name == "Current") {
+		qWarning() << "AtmosphereModel: invalid atmosphere name"
+			   << name;
+		return false;
+	}
+
+	QDir baseDir(QStandardPaths::writableLocation(
+			     QStandardPaths::GenericDataLocation) +
+		     "/atmospheres");
+	if (baseDir.exists(name)) {
+		qWarning() << "AtmosphereModel: atmosphere already exists"
+			   << name;
+		return false;
+	}
+	if (!baseDir.mkpath(name)) {
+		qWarning()
+			<< "AtmosphereModel: failed to create directory for"
+			<< name;
+		return false;
+	}
+	QString atmosphereDir = baseDir.filePath(name);
+
+	QImage wallpaper(wallpaperUrl.toLocalFile());
+	if (wallpaper.isNull() ||
+	    !wallpaper.save(atmosphereDir + "/wallpaper.jpg", "JPG")) {
+		qWarning() << "AtmosphereModel: failed to save wallpaper for"
+			   << name;
+		QDir(atmosphereDir).removeRecursively();
+		return false;
+	}
+
+	auto stripHash = [](QString color) {
+		return color.startsWith("#") ? color.mid(1) : color;
+	};
+	QSettings settings(atmosphereDir + "/settings.ini",
+			    QSettings::IniFormat);
+	settings.setValue("variant",
+			   stripHash(colors.value("variant").toString()));
+	settings.setValue(
+		"primaryColor",
+		stripHash(colors.value("primaryColor").toString()));
+	settings.setValue(
+		"primaryAlphaColor",
+		stripHash(colors.value("primaryAlphaColor").toString()));
+	settings.setValue(
+		"secondaryColor",
+		stripHash(colors.value("secondaryColor").toString()));
+	settings.setValue(
+		"secondaryAlphaColor",
+		stripHash(colors.value("secondaryAlphaColor").toString()));
+	settings.setValue(
+		"accentColor",
+		stripHash(colors.value("accentColor").toString()));
+	settings.setValue("textColor",
+			   stripHash(colors.value("textColor").toString()));
+	settings.sync();
+
+	atmosphereListChanged();
+	return true;
 }
 
 QUrl AtmosphereModel::themeSound(QString name)

@@ -10,7 +10,8 @@ pkg_check_modules(CUTIESTORE cutiestore REQUIRED IMPORTED_TARGET)
 qt_standard_project_setup()
 
 set(lib_SOURCES
-    src/atmosphere.cpp src/atmosphere.h)
+    src/atmosphere.cpp src/atmosphere.h
+    src/paletteextractor.cpp src/paletteextractor.h)
 
 qt6_add_library(atmosphere
     SHARED ${lib_SOURCES}

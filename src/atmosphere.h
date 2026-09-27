@@ -61,6 +61,17 @@ class AtmosphereModel : public QObject {
 
 	Q_INVOKABLE QUrl themeSound(QString name);
 
+	// Extracts a candidate palette from a wallpaper image; does not
+	// touch disk. See PaletteExtractor for the algorithm.
+	Q_INVOKABLE QVariantMap extractPalette(QUrl wallpaperUrl);
+
+	// Persists a new atmosphere under the writable data location with
+	// the given wallpaper and colours (as returned by extractPalette,
+	// optionally tweaked by the user first). Returns false on failure
+	// (name taken, invalid name, or the wallpaper couldn't be read).
+	Q_INVOKABLE bool saveAtmosphere(QString name, QUrl wallpaperUrl,
+					 QVariantMap colors);
+
 	static QObject *provider(QQmlEngine *engine, QJSEngine *scriptEngine);
 
     public Q_SLOTS:
