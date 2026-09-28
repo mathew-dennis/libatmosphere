@@ -138,6 +138,7 @@ bool AtmosphereModel::saveAtmosphere(QString name, QUrl wallpaperUrl,
 		stripHash(colors.value("accentColor").toString()));
 	settings.setValue("textColor",
 			   stripHash(colors.value("textColor").toString()));
+	settings.setValue("editable", true);
 	settings.sync();
 
 	atmosphereListChanged();
@@ -201,6 +202,10 @@ void AtmosphereModel::onAtmosphereDataChanged(QVariantMap data)
 					myMap.insert("variant",
 						     settings.value("variant")
 							     .toString());
+					myMap.insert("editable",
+						     settings.value("editable",
+								    false)
+							     .toBool());
 					myList << myMap;
 				}
 			}
