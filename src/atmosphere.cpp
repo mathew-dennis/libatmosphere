@@ -143,7 +143,7 @@ bool AtmosphereModel::saveAtmosphere(QString name, QUrl wallpaperUrl,
 	settings.setValue("editable", true);
 	settings.sync();
 
-	atmosphereListChanged();
+	onAtmosphereDataChanged(m_atmosphereStore->data());
 	return true;
 }
 
