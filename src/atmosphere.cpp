@@ -1,7 +1,9 @@
 #include "atmosphere.h"
 #include "paletteextractor.h"
 #include <QDir>
+#include <QFileInfo>
 #include <QImage>
+#include <QSettings>
 #include <QStandardPaths>
 #include <QtQuick>
 #include <cutiestore.h>
@@ -142,6 +144,49 @@ bool AtmosphereModel::saveAtmosphere(QString name, QUrl wallpaperUrl,
 	settings.sync();
 
 	atmosphereListChanged();
+	return true;
+}
+
+bool AtmosphereModel::deleteAtmosphere(QString atmosphereName)
+{
+	QDir baseDir(QStandardPaths::writableLocation(
+			     QStandardPaths::GenericDataLocation) +
+		     "/atmospheres");
+	if (atmosphereName.isEmpty() || atmosphereName == "." ||
+	    atmosphereName == ".." || atmosphereName == "Current" ||
+	    atmosphereName.contains('/') || atmosphereName.contains('\\')) {
+		qWarning() << "AtmosphereModel: invalid atmosphere name" << atmosphereName;
+		return false;
+	}
+
+	QString atmospherePath = baseDir.filePath(atmosphereName);
+	QString settingsPath = QDir(atmospherePath).filePath("settings.ini");
+	if (QFileInfo(atmospherePath).isSymLink() ||
+	    !QFileInfo::exists(settingsPath)) {
+		qWarning() << "AtmosphereModel: settings.ini not found for" << atmosphereName;
+		return false;
+	}
+
+	QSettings settings(settingsPath, QSettings::IniFormat);
+	if (!settings.value("editable", false).toBool()) {
+		qWarning() << "AtmosphereModel: theme is not editable:" << atmosphereName;
+		return false;
+	}
+
+	bool wasActive =
+		QDir::cleanPath(QFileInfo(p_path).absoluteFilePath()) ==
+		QDir::cleanPath(QFileInfo(atmospherePath).absoluteFilePath());
+	if (!QDir(atmospherePath).removeRecursively()) {
+		qWarning() << "AtmosphereModel: failed to delete" << atmosphereName;
+		return false;
+	}
+
+	if (wasActive)
+		setPath(QString(DEFAULT_ATMOSPHERE_PATH));
+	else
+		onAtmosphereDataChanged(m_atmosphereStore->data());
+
+	qInfo() << "AtmosphereModel: deleted atmosphere" << atmosphereName;
 	return true;
 }
 

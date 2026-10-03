@@ -71,6 +71,8 @@ class AtmosphereModel : public QObject {
 	// (name taken, invalid name, or the wallpaper couldn't be read).
 	Q_INVOKABLE bool saveAtmosphere(QString name, QUrl wallpaperUrl,
 					 QVariantMap colors);
+	// Deletes a named theme only when its settings file marks it editable.
+	Q_INVOKABLE bool deleteAtmosphere(QString atmosphereName);
 
 	static QObject *provider(QQmlEngine *engine, QJSEngine *scriptEngine);
 
