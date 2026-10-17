@@ -4,6 +4,7 @@
 #include <QImage>
 #include <vector>
 #include <algorithm>
+#include <QDebug>
 #include <cmath>
 
 namespace {
@@ -152,6 +153,7 @@ QVariantMap PaletteExtractor::extract(const QUrl &wallpaperUrl)
 	result["accentColor"] = "#" + toHex(accent);
 	result["textColor"] = "#" + textColor;
 	result["variant"] = variant;
-
+	
+	qDebug() << "PaletteExtractor::extract" << wallpaperUrl << result;
 	return result;
 }
