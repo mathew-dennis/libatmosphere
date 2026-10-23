@@ -145,6 +145,11 @@ QString AtmosphereModel::textColor()
 	return p_textColor;
 }
 
+QString AtmosphereModel::particleEffects()
+{
+	return p_particleEffects;
+}
+
 QVariantList AtmosphereModel::atmosphereList()
 {
 	return p_atmosphereList;
@@ -282,6 +287,8 @@ void AtmosphereModel::onAtmosphereDataChanged(QVariantMap data)
 	p_accentColor = "#" + settings.value("accentColor").toString();
 	p_textColor = "#" + settings.value("textColor").toString();
 	p_variant = settings.value("variant").toString();
+	p_particleEffects =
+		settings.value("particle-effects", "none").toString();
 	if (useSystemAppearance) {
 		const QColor accent = portalAccentColor();
 		qDebug() << "libatmosphere: portal accent" << accent;
@@ -323,6 +330,7 @@ void AtmosphereModel::onAtmosphereDataChanged(QVariantMap data)
 	accentColorChanged();
 	textColorChanged();
 	variantChanged();
+	particleEffectsChanged();
 }
 
 QObject *AtmosphereModel::provider(QQmlEngine *engine, QJSEngine *scriptEngine)

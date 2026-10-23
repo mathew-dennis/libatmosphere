@@ -23,6 +23,8 @@ class AtmosphereModel : public QObject {
 	Q_PROPERTY(
 		QString accentColor READ accentColor NOTIFY accentColorChanged);
 	Q_PROPERTY(QString textColor READ textColor NOTIFY textColorChanged);
+	Q_PROPERTY(QString particleEffects READ particleEffects NOTIFY
+			   particleEffectsChanged);
 
 	Q_PROPERTY(QVariantList atmosphereList READ atmosphereList NOTIFY
 			   atmosphereListChanged);
@@ -38,6 +40,7 @@ class AtmosphereModel : public QObject {
 	QString p_secondaryAlphaColor;
 	QString p_accentColor;
 	QString p_textColor;
+	QString p_particleEffects;
 
 	QVariantList p_atmosphereList;
 
@@ -56,6 +59,7 @@ class AtmosphereModel : public QObject {
 	Q_INVOKABLE QString secondaryAlphaColor();
 	Q_INVOKABLE QString accentColor();
 	Q_INVOKABLE QString textColor();
+	Q_INVOKABLE QString particleEffects();
 
 	Q_INVOKABLE QVariantList atmosphereList();
 
@@ -89,6 +93,7 @@ class AtmosphereModel : public QObject {
 	void secondaryAlphaColorChanged();
 	void accentColorChanged();
 	void textColorChanged();
+	void particleEffectsChanged();
 
 	void atmosphereListChanged();
 };
