@@ -6,6 +6,7 @@
 #include <QGuiApplication>
 #include <QImage>
 #include <QPalette>
+#include <QRegularExpression>
 #include <QSettings>
 #include <QStandardPaths>
 #include <QtDBus>
@@ -180,7 +181,7 @@ bool AtmosphereModel::saveAtmosphere(QString name, QUrl wallpaperUrl,
 	for (const QString &key : QStringList{
 		     "variant", "primaryColor", "primaryAlphaColor",
 		     "secondaryColor", "secondaryAlphaColor", "accentColor",
-		     "textColor"})
+		     "textColor", "particle-effects"})
 		settings.setValue(key, colors.value(key).toString().remove('#'));
 	settings.setValue("editable", true);
 	settings.sync();
@@ -205,6 +206,17 @@ bool AtmosphereModel::deleteAtmosphere(QString name)
 	else
 		onAtmosphereDataChanged(m_atmosphereStore->data());
 	return true;
+}
+
+QUrl AtmosphereModel::particleSprite(QString name)
+{
+	static const QRegularExpression valid("^[a-z0-9_-]+$");
+	if (!valid.match(name).hasMatch())
+		return QUrl();
+	const QString file = QStandardPaths::locate(
+		QStandardPaths::GenericDataLocation,
+		"atmosphere-particles/" + name + ".png");
+	return file.isEmpty() ? QUrl() : QUrl::fromLocalFile(file);
 }
 
 QUrl AtmosphereModel::themeSound(QString name)
