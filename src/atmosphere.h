@@ -60,6 +60,7 @@ class AtmosphereModel : public QObject {
 	Q_INVOKABLE QString accentColor();
 	Q_INVOKABLE QString textColor();
 	Q_INVOKABLE QString particleEffects();
+	Q_INVOKABLE QUrl particleSprite(QString name);
 
 	Q_INVOKABLE QVariantList atmosphereList();
 
